@@ -15,14 +15,21 @@ export no_proxy="127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com"
 echo no_proxy="'127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com'" >> /etc/environment
 echo http_proxy="'${http_proxy}'" >> /etc/environment
 echo https_proxy="'${https_proxy}'" >> /etc/environment
-apt-get update
-apt-get install -y hiera puppet software-properties-common 
-wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
-wget -O jiocloud.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/python-jiocloud/python-jiocloud_0.1+1_all.deb 
+wget -O jiocloud.deb -t 5 -T 30 http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-trusty.deb
+wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-trusty.deb
+dpkg -i jiocloud.deb puppet.deb
+
+n=0
+while [ \$n -le 6 ]
+do
+  apt-get update && apt-get install -y hiera ruby puppet software-properties-common jiocloud-ssl-certificate && break
+  n=\$((\$n+1))
+  sleep 5
+done
+
+wget -O python-cloud.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/python-jiocloud/python-jiocloud_0.1+1_all.deb 
 wget -O puppet-jiocloud_0.9+14_all.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/puppet-jiocloud/puppet-jiocloud_0.9+14_all.deb 
-dpkg -i  puppet.deb puppet-jiocloud_0.9+14_all.deb jiocloud.deb 
-apt-get  install -y -f
-dpkg -i  puppet.deb puppet-jiocloud_0.9+14_all.deb jiocloud.deb 
+dpkg -i  puppet-jiocloud_0.9+14_all.deb python-cloud.deb 
 time gem install faraday faraday_middleware --no-ri --no-rdoc;
 time gem install librarian-puppet-simple --no-ri --no-rdoc;
 
