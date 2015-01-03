@@ -14,7 +14,6 @@ sudo mkdir -p /etc/facter/facts.d
 export no_proxy="127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com"
 echo no_proxy="'127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com'" >> /etc/environment
 echo http_proxy="'${http_proxy}'" >> /etc/environment
-export https_proxy=${https_proxy}
 echo https_proxy="'${https_proxy}'" >> /etc/environment
 apt-get update
 apt-get install -y hiera puppet software-properties-common 
