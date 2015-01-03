@@ -13,16 +13,17 @@ release="\$(lsb_release -cs)"
 sudo mkdir -p /etc/facter/facts.d
 export no_proxy="127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com"
 echo no_proxy="'127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com'" >> /etc/environment
-export ${http_proxy}
 echo http_proxy="'${http_proxy}'" >> /etc/environment
 export https_proxy=${https_proxy}
 echo https_proxy="'${https_proxy}'" >> /etc/environment
-wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
-wget -O jiocloud.deb -t 5 -T 30 http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-trusty.deb
-dpkg -i puppet.deb jiocloud.deb
-dpkg -i /etc/data/puppet-jiocloud_0.9-1_all.deb 
 apt-get update
-apt-get install hiera
+apt-get install -y hiera puppet software-properties-common 
+wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
+wget -O jiocloud.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/python-jiocloud/python-jiocloud_0.1+1_all.deb 
+wget -O puppet-jiocloud_0.9+14_all.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/puppet-jiocloud/puppet-jiocloud_0.9+14_all.deb 
+dpkg -i jiocloud.deb
+apt-get --assume-yes install -f
+dpkg -i  puppet.deb puppet-jiocloud_0.9-1_all.deb 
 time gem install faraday faraday_middleware --no-ri --no-rdoc;
 time gem install librarian-puppet-simple --no-ri --no-rdoc;
 
@@ -30,7 +31,7 @@ echo 'consul_discovery_token='${consul_discovery_token} > /etc/facter/facts.d/co
 # default to first 16 bytes of discovery token
 echo 'consul_gossip_encrypt'=`echo ${consul_discovery_token} | cut -b 1-15 | base64` >> /etc/facter/facts.d/consul.txt
 #echo 'current_version='${BUILD_NUMBER} > /etc/facter/facts.d/current_version.txt
-echo 'env=vagrant-vbox'> /etc/facter/facts.d/env.txt
+echo 'env=staging'> /etc/facter/facts.d/env.txt
 
 
 
