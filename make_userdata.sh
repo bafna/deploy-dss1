@@ -21,9 +21,9 @@ apt-get install -y hiera puppet software-properties-common
 wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
 wget -O jiocloud.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/python-jiocloud/python-jiocloud_0.1+1_all.deb 
 wget -O puppet-jiocloud_0.9+14_all.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/puppet-jiocloud/puppet-jiocloud_0.9+14_all.deb 
-dpkg -i jiocloud.deb
-apt-get --assume-yes install -f
-dpkg -i  puppet.deb puppet-jiocloud_0.9-1_all.deb 
+dpkg -i  puppet.deb puppet-jiocloud_0.9+14_all.deb jiocloud.deb 
+apt-get  install -y -f
+dpkg -i  puppet.deb puppet-jiocloud_0.9+14_all.deb jiocloud.deb 
 time gem install faraday faraday_middleware --no-ri --no-rdoc;
 time gem install librarian-puppet-simple --no-ri --no-rdoc;
 
