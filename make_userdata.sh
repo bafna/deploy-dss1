@@ -17,12 +17,19 @@ export https_proxy=${http_proxy}
 echo no_proxy="'127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com'" >> /etc/environment
 echo http_proxy="'${http_proxy}'" >> /etc/environment
 echo https_proxy="'${https_proxy}'" >> /etc/environment
-wget -O jiocloud.deb -t 5 -T 30 http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-trusty.deb
-wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-trusty.deb
-dpkg -i jiocloud.deb puppet.deb
+echo Package: puppet-jiocloud >> /etc/apt/preferences
+echo Pin: release n=overcast >> /etc/apt/preferences
+echo Pin-Priority: 900  >> /etc/apt/preferences
+echo  >> /etc/apt/preferences
+echo Package: puppet-jiocloud >> /etc/apt/preferences
+echo Pin: release n=trusty  >> /etc/apt/preferences
+echo Pin-Priority: -10  >> /etc/apt/preferences
 wget -q -O- 'http://apt.overcastcloud.com/bafnag/bafnag/repo.key' | sudo apt-key add -
 /bin/bash -c 'sudo echo "deb http://apt.overcastcloud.com/bafnag/bafnag overcast main" | sudo tee -a /etc/apt/sources.list'
 apt-get update
+wget -O jiocloud.deb -t 5 -T 30 http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-trusty.deb
+wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-trusty.deb
+dpkg -i jiocloud.deb puppet.deb
 
 n=0
 while [ \$n -le 6 ]
