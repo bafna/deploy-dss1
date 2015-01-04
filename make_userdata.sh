@@ -12,24 +12,28 @@ export git_protocol=https
 release="\$(lsb_release -cs)"
 sudo mkdir -p /etc/facter/facts.d
 export no_proxy="127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com"
+export http_proxy=${http_proxy} 
+export https_proxy=${http_proxy}
 echo no_proxy="'127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com'" >> /etc/environment
 echo http_proxy="'${http_proxy}'" >> /etc/environment
 echo https_proxy="'${https_proxy}'" >> /etc/environment
 wget -O jiocloud.deb -t 5 -T 30 http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-trusty.deb
 wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-trusty.deb
 dpkg -i jiocloud.deb puppet.deb
+wget -q -O- 'http://apt.overcastcloud.com/bafnag/bafnag/repo.key' | sudo apt-key add -
+/bin/bash -c 'sudo echo "deb http://apt.overcastcloud.com/bafnag/bafnag overcast main" | sudo tee -a /etc/apt/sources.list'
+apt-get update
 
 n=0
 while [ \$n -le 6 ]
 do
-  apt-get update && apt-get install -y hiera ruby puppet software-properties-common jiocloud-ssl-certificate && break
+  apt-get update && apt-get install -y puppet-jiocloud hiera ruby puppet software-properties-common jiocloud-ssl-certificate && break
   n=\$((\$n+1))
   sleep 5
 done
 
 wget -O python-cloud.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/python-jiocloud/python-jiocloud_0.1+1_all.deb 
-wget -O puppet-jiocloud_0.9+14_all.deb -t 5 -T 30 http://apt.overcastcloud.com/bafnag/bafnag/pool/main/p/puppet-jiocloud/puppet-jiocloud_0.9+14_all.deb 
-dpkg -i  puppet-jiocloud_0.9+14_all.deb python-cloud.deb 
+dpkg -i  python-cloud.deb 
 time gem install faraday faraday_middleware --no-ri --no-rdoc;
 time gem install librarian-puppet-simple --no-ri --no-rdoc;
 
@@ -46,6 +50,7 @@ do
   # first install all packages to make the build as fast as possible
   puppet apply --detailed-exitcodes /etc/puppet/manifests/site.pp --config_version='echo packages' --tags package
   ret_code_package=\$?
+  apt-get install -f -y
   # now perform base config
   (echo 'File<| title == "/etc/consul" |> { purge => false }'; echo 'include rjil::jiocloud' ) | puppet apply --config_version='echo bootstrap' --detailed-exitcodes --debug /etc/puppet/manifests/site.pp
   ret_code_jio=\$?
